@@ -9,18 +9,10 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.date} | {self.category} | ₹{self.amount}"
-    
 
-class Insight(models.Model):
-    total_spent = models.FloatField()
-    spending_pattern = models.TextField()
-
-    def __str__(self):
-        return f"Total spent: ₹{self.total_spent}, Pattern: {self.spending_pattern}"    
-    
 class UserSettings(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    budget_threshold = models.FloatField(default=10000)  
-    def __str__(self):
-        return f"{self.user.username}'s Settings"
+    budget_threshold = models.FloatField(default=10000)
     
+    def __str__(self):
+        return f"{self.user.username}'s Settings (Budget: ₹{self.budget_threshold})"
