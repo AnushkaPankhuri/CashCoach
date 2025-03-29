@@ -43,7 +43,12 @@ from django.contrib.auth.models import User
 #                     amount=float(row[3])
 #                 )
 #         return Response({"message": "CSV Uploaded Successfully."}, status=201)
-    
+
+def dashboard(request):
+    transactions = Transaction.objects.all()
+    return render(request, 'index.html', {'transactions': transactions})
+
+ 
 class UploadCSV(APIView):
     def post(self, request, format=None):
         csv_file = request.FILES.get('file')
