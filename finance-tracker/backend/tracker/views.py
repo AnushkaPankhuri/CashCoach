@@ -1,12 +1,58 @@
 from django.shortcuts import render, redirect
-from django.contrib import messages
+from django.contrib import messages, auth
+from django.contrib.auth.decorators import login_required
 from django.views import View
-from .models import Transaction, Budget, UserSettings
+from .models import Transaction,UserSettings,Budget
 import pandas as pd
 from datetime import datetime, timedelta
 from django.db.models import Sum
+from django.utils.decorators import method_decorator
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
+def login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = auth.authenticate(username=username, password=password)
+        if user is not None:
+            auth.login(request, user)
+            return redirect('dashboard')
+        messages.error(request, "Invalid username or password")
+    return render(request, 'auth/login.html')
+
+def signup(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+        
+        if password1 != password2:
+            messages.error(request, "Passwords don't match")
+            return redirect('signup')
+        
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already taken")
+            return redirect('signup')
+            
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already registered")
+            return redirect('signup')
+            
+        user = User.objects.create_user(username=username, email=email, password=password1)
+        UserSettings.objects.create(user=user)
+        auth.login(request, user)
+        return redirect('dashboard')
+        
+    return render(request, 'auth/signup.html')
+
+def logout(request):
+    auth.logout(request)
+    return redirect('login')
+
+@method_decorator(login_required, name='dispatch')
 def dashboard(request):
     transactions = Transaction.objects.all().order_by('-date')[:50]
     budget = Budget.objects.first() if Budget.objects.exists() else None
@@ -34,7 +80,7 @@ def dashboard(request):
         'insights': insights,
     })
 
-
+@method_decorator(login_required, name='dispatch')
 class UploadCSVView(View):
     def post(self, request):
         if 'csv_file' not in request.FILES:
@@ -70,7 +116,7 @@ class UploadCSVView(View):
             messages.error(request, f"Error: {str(e)}")
             return redirect('dashboard')
 
-
+@method_decorator(login_required, name='dispatch')
 class BudgetView(View):
     def post(self, request):
         amount = request.POST.get('budget_amount')
@@ -89,7 +135,7 @@ class BudgetView(View):
         
         return redirect('dashboard')
 
-
+@login_required
 def filter_transactions(request):
     category = request.GET.get('category')
     start_date = request.GET.get('start_date')
