@@ -72,6 +72,13 @@
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 20px;
         }
+
+        #navbar_logo{
+            height:40px;
+            width:40px;
+        }
+
+        
     </style>
 </head>
 
@@ -80,7 +87,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">💸 CashCoach</a>
+            <a class="navbar-brand" href="#"><img id ="navbar_logo" src="{% static 'images/cashcoach_logo.png' %}">CashCoach</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -146,7 +153,7 @@
             <section id="insights">
                 <div class="card card-custom h-100">
                     <div class="card-header-colored panel-teal d-flex align-items-center px-3">
-                        <h5 class="m-0">Insights</h5>
+                        <h5 class="text-white m-0">Insights</h5>
                     </div>
                     <div class="card-body p-4">
                         <canvas id="insightsChart"></canvas>
@@ -208,7 +215,7 @@
     <footer class="text-center">
         <div class="container">
             <p>© 2025 CashCoach. All rights reserved.</p>
-            <p>Built with ❤️ for FrostHack</p>
+            <!-- <p>Built with ❤️ for FrostHack</p> -->
         </div>
     </footer>
 
